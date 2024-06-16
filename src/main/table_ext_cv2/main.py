@@ -14,7 +14,7 @@ table_extractor = te.TableExtractor(path_to_image)
 lines_remover = tlr.TableLinesRemover(image_new)
 image_without_lines = lines_remover.execute()
 # cv2.imshow("image_without_lines", image_without_lines)
-
+print('done')
 # ocr_tool = ottt.OcrToTableTool(image_without_lines, perspective_corrected_image)
 # ocr_tool.execute()
 

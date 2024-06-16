@@ -1,3 +1,10 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import List, Dict, Tuple
+
+
+
 def words_on_line(words: List[Dict], row_line: List[int], line_height_tolerance: int = 5) -> List[Dict]:
     tokens_on_line = []
     for word in words:

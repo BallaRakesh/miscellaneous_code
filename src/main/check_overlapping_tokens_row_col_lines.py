@@ -18,7 +18,6 @@ def words_on_line(words: List[Dict], row_line: List[int], col_line: List[int], l
             if word['x1'] - line_height_tolerance <= col_lines_[0] <= word['x2'] + line_height_tolerance:
                 tokens_on_col_line.append(word['word'])
         
-                
     return tokens_on_row_line, tokens_on_col_line
 
 # Example word coordinates and row line

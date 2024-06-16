@@ -5,6 +5,8 @@ class TableLinesRemover:
 
     def __init__(self, image):
         self.image = image
+        self.vertical_bboxes = []
+        self.horizontal_bboxes = []
 
     def execute(self):
         self.grayscale_image()
@@ -25,6 +27,7 @@ class TableLinesRemover:
         self.store_process_image("7_image_without_lines.jpg", self.image_without_lines)
         self.remove_noise_with_erode_and_dilate()
         self.store_process_image("8_image_without_lines_noise_removed.jpg", self.image_without_lines_noise_removed)
+        self.draw_bboxes()
         return self.image_without_lines_noise_removed
 
     def grayscale_image(self):
@@ -37,20 +40,22 @@ class TableLinesRemover:
         self.inverted_image = cv2.bitwise_not(self.thresholded_image)
 
     def erode_vertical_lines(self):
-        hor = np.array([[1,1,1,1,1,1]])
-        self.vertical_lines_eroded_image = cv2.erode(self.inverted_image, hor, iterations=10)
-        self.vertical_lines_eroded_image = cv2.dilate(self.vertical_lines_eroded_image, hor, iterations=10)        
+        ver_kernel = np.ones((25, 1), np.uint8)
+        self.vertical_lines_eroded_image = cv2.erode(self.inverted_image, ver_kernel, iterations=2)
+        self.vertical_lines_eroded_image = cv2.dilate(self.vertical_lines_eroded_image, ver_kernel, iterations=2)
+        self.vertical_bboxes = self.get_bounding_boxes(self.vertical_lines_eroded_image)
 
     def erode_horizontal_lines(self):
-        ver = np.array([[1],
-               [1],
-               [1],
-               [1],
-               [1],
-               [1],
-               [1]])
-        self.horizontal_lines_eroded_image = cv2.erode(self.inverted_image, ver, iterations=10)
-        self.horizontal_lines_eroded_image = cv2.dilate(self.horizontal_lines_eroded_image, ver, iterations=10)
+        hor_kernel = np.ones((1, 25), np.uint8)
+        self.horizontal_lines_eroded_image = cv2.erode(self.inverted_image, hor_kernel, iterations=2)
+        self.horizontal_lines_eroded_image = cv2.dilate(self.horizontal_lines_eroded_image, hor_kernel, iterations=2)
+        self.horizontal_bboxes = self.get_bounding_boxes(self.horizontal_lines_eroded_image)
+
+    def get_bounding_boxes(self, eroded_image):
+        contours, _ = cv2.findContours(eroded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        bboxes = [cv2.boundingRect(contour) for contour in contours]
+        print(bboxes)
+        return bboxes
 
     def combine_eroded_images(self):
         self.combined_image = cv2.add(self.vertical_lines_eroded_image, self.horizontal_lines_eroded_image)
@@ -67,6 +72,23 @@ class TableLinesRemover:
         self.image_without_lines_noise_removed = cv2.erode(self.image_without_lines, kernel, iterations=1)
         self.image_without_lines_noise_removed = cv2.dilate(self.image_without_lines_noise_removed, kernel, iterations=1)
 
+    def draw_bboxes(self):
+        # Convert back to BGR for drawing colored rectangles
+        image_with_bboxes = cv2.cvtColor(self.grey, cv2.COLOR_GRAY2BGR)
+        for (x, y, w, h) in self.vertical_bboxes:
+            cv2.rectangle(image_with_bboxes, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        for (x, y, w, h) in self.horizontal_bboxes:
+            cv2.rectangle(image_with_bboxes, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.imwrite("/New_Volume/Rakesh/miscellaneous_code/src/sample_outputs/9_image_with_bboxes.jpg", image_with_bboxes)
+
     def store_process_image(self, file_name, image):
-        path = "./process_images/table_lines_remover/" + file_name
+        path = "/New_Volume/Rakesh/miscellaneous_code/src/sample_outputs" + file_name
         cv2.imwrite(path, image)
+
+# Example usage:
+image_path = "/New_Volume/Rakesh/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.png"
+image = cv2.imread(image_path)
+remover = TableLinesRemover(image)
+processed_image = remover.execute()
+print("Vertical lines detected:", len(remover.vertical_bboxes))
+print("Horizontal lines detected:", len(remover.horizontal_bboxes))

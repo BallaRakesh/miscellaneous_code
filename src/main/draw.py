@@ -24,5 +24,10 @@ bbox = [0, 115, 1490, 115]
 image_path = '/New_Volume/Rakesh/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.png'  # Update the path to your image
 image = cv2.imread(image_path)
 bbox = [115, 0, 115, image.shape[0]] 
+bbox = [8, 53, 1477, 18]
+#21, 62, 1467, 6), (21, 55, 1467, 7), (20, 1, 1468, 6), (561, 0, 927, 3)
+
+# [(1317, 106, 2, 270), (1213, 104, 2, 268), (1067, 104, 2, 268), (469, 104, 2, 269)]
+# [(10, 392, 436, 2), (11, 62, 1471, 6), (11, 55, 1471, 7), (10, 1, 1472, 6), (551, 0, 931, 3)]
 print(bbox)
 draw(image_path, bbox)

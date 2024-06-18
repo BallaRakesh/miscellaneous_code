@@ -41,15 +41,6 @@ def parse_json_and_find_columns(json_input):
 
 # Example JSON input (provided in the question)
 
-with open('/datadrive/table_res_trans/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.json', 'r') as exp:
-    json_input = json.load(exp)
-
-
-print(json_input)
-# Find the column indices for "goods description", "unit price", and "amount"
-column_indices = parse_json_and_find_columns(json_input)
-
-
 def extract_goods_info(json_input, column_indices):
     cells = json_input['cells']
     goods_info = {}
@@ -75,12 +66,91 @@ def extract_goods_info(json_input, column_indices):
 
     return goods_info
 
+def aggregate_goods_info(goods_info):
+    aggregated_info = {}
+    for key, goods in goods_info.items():
+        description = goods['goods_description']
+        if description not in aggregated_info:
+            aggregated_info[description] = {
+                'quantity': 0,
+                'amount': 0
+            }
+
+        # Add quantity if it is a number
+        if goods['quantity'].replace('.', '', 1).isdigit():
+            aggregated_info[description]['quantity'] += float(goods['quantity'])
+        
+        # Add amount if it is a number
+        if goods['amount'].replace('.', '', 1).isdigit():
+            aggregated_info[description]['amount'] += float(goods['amount'])
+
+    # Convert aggregated_info back to goods_info format
+    final_goods_info = {}
+    counter = 1
+    for description, data in aggregated_info.items():
+        final_goods_info[f'goods{counter}'] = {
+            'goods_description': description,
+            'quantity': str(data['quantity']),
+            'unit_price': '',
+            'amount': str(data['amount'])
+        }
+        counter += 1
+
+    return final_goods_info
+
+
+
+#############################################################
+#############################################################
+# Example JSON input (provided in the question)
+json_input = {
+    "table_coords": [104, 898, 1594, 1281],
+    "headers": [
+        {"pos": 0, "content": "marks & nos", "bbox": [0, 0, 467, 27]},
+        {"pos": 1, "content": "no & kind of pkgs description", "bbox": [467, 0, 838, 27]},
+        {"pos": 2, "content": "description", "bbox": [838, 0, 1067, 27]},
+        {"pos": 3, "content": "quantity", "bbox": [1067, 0, 1211, 27]},
+        {"pos": 4, "content": "rate", "bbox": [1211, 0, 1316, 27]},
+        {"pos": 5, "content": "amount", "bbox": [1316, 0, 1489, 27]}
+    ],
+    "cells": [
+        {"content": "cold dough premix fdpz3004", "bbox": [0, 86, 467, 116], "column_nums": [0], "row_nums": [0]},
+        {"content": "11 ctn cold dough premix", "bbox": [467, 86, 838, 116], "column_nums": [1], "row_nums": [0]},
+        {"content": "", "bbox": [838, 86, 1067, 116], "column_nums": [2], "row_nums": [0]},
+        {"content": "11.0000", "bbox": [1067, 86, 1211, 116], "column_nums": [3], "row_nums": [0]},
+        {"content": "cif 38.324", "bbox": [1211, 86, 1316, 116], "column_nums": [4], "row_nums": [0]},
+        {"content": "421.560", "bbox": [1316, 86, 1489, 116], "column_nums": [5], "row_nums": [0]},
+        {"content": "cold dough premix fdpz3004 net wt : 38.75 kg batch no sb121288 dom : 22 august 2011 bbf 21 december 2011", "bbox": [0, 86, 467, 383], "column_nums": [0], "row_nums": [1]},
+        {"content": "11 ctn cold dough premix packed in 775 g x 50 pkt x 1 sack 11 x 38.75 426.2500", "bbox": [467, 86, 838, 383], "column_nums": [1], "row_nums": [1]},
+        {"content": "woven 426.2500 kgs", "bbox": [838, 86, 1067, 383], "column_nums": [2], "row_nums": [1]},
+        {"content": "11.0000 ctn", "bbox": [1067, 86, 1211, 383], "column_nums": [3], "row_nums": [1]},
+        {"content": "cif 38.324 per ctn", "bbox": [1211, 86, 1316, 383], "column_nums": [4], "row_nums": [1]},
+        {"content": "421.560", "bbox": [1316, 86, 1489, 383], "column_nums": [5], "row_nums": [1]}
+    ]
+}
+
+with open('/datadrive/table_res_trans/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.json', 'r') as exp:
+    json_input = json.load(exp)
+
+
+# print(json_input)
+# Find the column indices for "goods description", "unit price", and "amount"
+column_indices = parse_json_and_find_columns(json_input)
+
 
 # Column indices obtained earlier
 # column_indices = {'goods_description': 2, 'quantity': 3, 'unit_price': 4, 'amount': 5}
 
 # Extract goods information
+print('column_indices', column_indices)
 goods_info = extract_goods_info(json_input, column_indices)
+print("Extracted Goods Info:")
 print(goods_info)
+
+# Aggregate goods information
+aggregated_goods_result = aggregate_goods_info(goods_info)
+print("Aggregated Goods Info:")
+print(aggregated_goods_result)
+
 
 

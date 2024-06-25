@@ -2,7 +2,7 @@ import os
 from google.cloud import vision
 import pytesseract
 
-gv_key = '/New_Volume/Rakesh/miscellaneous_code/src/main/gv_key.json'
+gv_key = '/datadrive/intelligent_trade_finance/TradeFinance_rakesh/google_vision_key.json'
 
 def get_ocr_vision_api_charConfi(image_path):
 	"""

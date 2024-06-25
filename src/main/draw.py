@@ -6,7 +6,7 @@ def draw_single(image_path, bbox, output_path):
 
     # Define the color and thickness of the line
     color = (0, 255, 0)  # Green color in BGR
-    thickness = 2  # Thickness of 2 pixels
+    thickness = 3  # Thickness of 2 pixels
 
     # Draw the line on the image
     cv2.line(image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, thickness)
@@ -19,7 +19,7 @@ def draw_multiple(image_path, bboxes, output_path):
 
     # Define the color and thickness of the line
     color = (0, 255, 0)  # Green color in BGR
-    thickness = 2  # Thickness of 2 pixels
+    thickness = 3  # Thickness of 2 pixels
 
     # Draw lines for each bounding box on the image
     for bbox in bboxes:
@@ -49,11 +49,11 @@ bbox = [0, 115, 1490, 115]
 
 output_path = '/datadrive/table_res_trans/miscellaneous_code/src/out_puts/output_with_line.png'  # Path to save the output image
 # Load the image
-image_path = '/datadrive/table_res_trans/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.png'  # Update the path to your image
+image_path = '/datadrive/clasification_testing_stru_unstru/PDF_101/crop_images/pdf27-07_.png'  # Update the path to your image
 image = cv2.imread(image_path)
 bbox = [115, 0, 115, image.shape[0]] 
 bbox = [[0, 160, 1490, 160],[0, 243, 1490, 243]]
-bbox = [0, 0, 467, 28]
+bbox = [2153, 693, 2273, 738]
 #21, 62, 1467, 6), (21, 55, 1467, 7), (20, 1, 1468, 6), (561, 0, 927, 3)
 
 # [(1317, 106, 2, 270), (1213, 104, 2, 268), (1067, 104, 2, 268), (469, 104, 2, 269)]
@@ -61,5 +61,6 @@ bbox = [0, 0, 467, 28]
 # print(bbox)
 draw_single(image_path, bbox, output_path)
 
-
-draw_multiple(image_path, col_bboxs, output_path)
+col_bboxs = [[13, 5, 119, 34], [121, 5, 143, 34], [147, 5, 213, 34], [212, 5, 227, 34], [487, 4, 548, 36], [548, 6, 573, 36], [572, 6, 647, 37], [659, 8, 698, 39], [704, 9, 789, 41], [1144, 12, 1332, 45], [1343, 12, 1378, 45], [1386, 12, 1499, 45], [1922, 14, 2064, 49]]
+print(len(col_bboxs))
+# draw_multiple(image_path, col_bboxs, output_path)

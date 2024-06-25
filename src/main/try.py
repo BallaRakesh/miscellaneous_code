@@ -1,6 +1,18 @@
 import cv2
 import numpy as np
 
+
+
+def tokenize(content):
+    return content.split()
+content = 'nylon\n adv'
+tokens = tokenize(content)
+
+print(tokens)
+exit('>>>>>>>')
+
+
+
 class TableLinesRemover:
 
     def __init__(self, image):

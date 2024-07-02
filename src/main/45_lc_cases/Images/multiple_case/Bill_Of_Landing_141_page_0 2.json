@@ -1,0 +1,26 @@
+{
+    "goods1": {
+        "goods_description": "1n4007s",
+        "quantity": "2000.0",
+        "unit_price": "4.300",
+        "amount": "8600.0"
+    },
+    "goods2": {
+        "goods_description": "1n4007s - s",
+        "quantity": "2000.0",
+        "unit_price": "4.200",
+        "amount": "8400.0"
+    },
+    "goods3": {
+        "goods_description": "db3",
+        "quantity": "500.0",
+        "unit_price": "5.800",
+        "amount": "2900.0"
+    },
+    "goods4": {
+        "goods_description": "ba159s",
+        "quantity": "500.0",
+        "unit_price": "4.700",
+        "amount": "2350.0"
+    }
+}

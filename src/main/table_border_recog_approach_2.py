@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-file =  r'table.jpg'
+file =  r'/New_Volume/Rakesh/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.png'
 
 im1 = cv2.imread(file, 0)
 im = cv2.imread(file)
@@ -19,9 +19,11 @@ for cnt in contours:
     cordinates.append((x,y,w,h))
     #bounding the images
     if y< 50:
-        
         cv2.rectangle(im,(x,y),(x+w,y+h),(0,0,255),1)
-        
-plt.imshow(im)
+# plt.imshow(im)
+cv2.imshow('Image', im)
+# Wait for a keystroke and close the window
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 cv2.namedWindow('detecttable', cv2.WINDOW_NORMAL)
 cv2.imwrite('detecttable.jpg',im)

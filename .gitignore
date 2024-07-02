@@ -1,0 +1,5 @@
+src/main/gv_key.json
+miscellaneous_code/src/main/gv_key.json
+*.pyc
+**/*.pyc
+**/__pycache__

@@ -39,7 +39,7 @@ class TableLinesRemover:
     def erode_vertical_lines(self):
         hor = np.array([[1,1,1,1,1,1]])
         self.vertical_lines_eroded_image = cv2.erode(self.inverted_image, hor, iterations=10)
-        self.vertical_lines_eroded_image = cv2.dilate(self.vertical_lines_eroded_image, hor, iterations=10)
+        self.vertical_lines_eroded_image = cv2.dilate(self.vertical_lines_eroded_image, hor, iterations=10)        
 
     def erode_horizontal_lines(self):
         ver = np.array([[1],

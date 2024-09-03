@@ -14,12 +14,12 @@ ftp_server = ftplib.FTP(HOSTNAME, USERNAME, PASSWORD)
 # force UTF-8 encoding
 ftp_server.encoding = "utf-8"
  
-ftp_server.mkd("TradeFinance/orientation_check1/")#1
-ftp_server.mkd("TradeFinance/orientation_check1/Images")#2
+# ftp_server.mkd("TradeFinance/orientation_check1/")#1
+# ftp_server.mkd("TradeFinance/orientation_check1/Images")#2
  
 # """
 # with open('/home/tarun/NumberTheory/TradeFinance/Repos/final_delivery_sample_document/BundleApi/TradeFinance/WI_12345678/WI_123456$
-#     ftp_server.retrbinary(' README', fp.write)
+#     ftp_server.retrbinary(' README', fp.write)orientation_check.pdf
 # """
  
 with open("/home/ntlpt19/TF_testing_EXT/code/miscellaneous_code/src/main/orientation_check.pdf", "rb") as local_file:

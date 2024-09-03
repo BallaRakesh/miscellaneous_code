@@ -1,5 +1,7 @@
 from PIL import Image, ImageDraw
 
+import cv2
+
 def draw_single(image_path: str, bbox: list, output_path: str):
     """
     Draws a single bounding box on the image and saves it.
@@ -8,17 +10,18 @@ def draw_single(image_path: str, bbox: list, output_path: str):
     :param bbox: List of bounding box coordinates [x1, y1, x2, y2].
     :param output_path: Path to save the output image.
     """
-    # Open the image
-    image = Image.open(image_path)
-
-    # Create a drawing context
-    draw = ImageDraw.Draw(image)
+    # Read the image
+    image = cv2.imread(image_path)
 
     # Draw the bounding box
-    draw.rectangle(bbox, outline="red", width=3)
+    cv2.rectangle(image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 4)
 
     # Save the output image
-    image.save(output_path)
+    cv2.imwrite(output_path, image)
+
+# Example usage:
+# draw_single('input.jpg', [50, 50, 200, 200], 'output.jpg')
+
 
 # Example usage
 from PIL import Image, ImageDraw
@@ -57,12 +60,23 @@ bboxes = [[13, 5, 227, 34], [487, 4, 789, 41], [1144, 12, 1499, 45], [1922, 14, 
 bbox2 = [[13, 5, 227, 34], [487, 4, 789, 41], [1144, 12, 1499, 45], [1922, 14, 2064, 49], [2326, 17, 2407, 46], [2739, 20, 2875, 47], [5, 62, 248, 96], [491, 122, 1532, 172], [837, 194, 1148, 238], [1937, 201, 2042, 241], [2314, 201, 2410, 241], [2693, 208, 2915, 245], [15, 329, 248, 369], [836, 330, 1738, 377], [1933, 336, 2047, 376], [2311, 340, 2411, 377], [2676, 338, 2928, 388], [836, 408, 975, 458], [14, 547, 154, 584], [12, 685, 226, 724], [833, 688, 2449, 740], [832, 1038, 1673, 1092], [2715, 1046, 2883, 1087], [2109, 1175, 2113, 1190]]
 bbox2 = [[3, 29, 212, 59], [494, 24, 795, 61], [1205, 23, 1562, 61], [1989, 24, 2131, 56], [2378, 22, 2459, 51], [2787, 21, 2923, 49], [3, 89, 236, 118], [499, 140, 1529, 182], [876, 209, 1189, 246], [2009, 206, 2111, 242], [2369, 203, 2470, 244], [2744, 201, 2968, 245], [1152, 250, 1163, 256], [7, 352, 266, 387], [877, 346, 1237, 385], [2004, 345, 2115, 381], [2368, 345, 2469, 380], [2728, 339, 2981, 386], [5, 560, 131, 600], [6, 703, 252, 739], [876, 698, 2507, 739], [877, 1046, 1713, 1097], [2770, 1038, 2943, 1078], [1297, 1273, 1303, 1285]]
 bbox2 = [(1205, 23, 1562, 61), (499, 140, 1529, 182), (876, 698, 2507, 739), (877, 1046, 1713, 1097)]
-image_path = '/datadrive/clasification_testing_stru_unstru/PDF_101/crop_images/pdf27-07.png'
-image_path = '/datadrive/clasification_testing_stru_unstru/PDF_101/crop_images/pdf23-05.png'
+image_path = '/home/ntlpt19/TF_testing_EXT/ITF_TESTING/PDFS_imgs_10-16/pdf10/pdf10_page-0007.jpg'
+# image_path = './MicrosoftTeams-image (3).png'
 output_path = 'output_path.png'
 
-draw_multiple_bboxes(image_path, bbox2, output_path)
-exit('.')
+# draw_multiple_bboxes(image_path, bbox2, output_path)
 bbox = [833, 688, 2449, 740]
 bbox = [877, 1046, 1713, 1097]
+
+
+bbox = [116,453,213,453]
+
+bbox = [
+    213,
+    480,
+    116,
+    480
+]
+bbox = [116,453,213,480]
+bbox = [84, 32, 276, 86]
 draw_single(image_path, bbox, output_path)

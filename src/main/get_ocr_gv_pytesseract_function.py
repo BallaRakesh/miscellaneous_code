@@ -2,7 +2,7 @@ import os
 from google.cloud import vision
 import pytesseract
 
-gv_key = '/datadrive/intelligent_trade_finance/TradeFinance_rakesh/google_vision_key.json'
+gv_key = '/home/ntlpt19/Desktop/TF_release/intelligent_TF_Branch2_45A/TradeFinance/google_vision_key.json'
 
 def get_ocr_vision_api_charConfi(image_path):
 	"""
@@ -114,6 +114,18 @@ def get_ocr_tesseract(image_path):
 	t2 = datetime.now()
 	return word_coordinates, all_text
 
-# image_path = '/New_Volume/Rakesh/miscellaneous_code/src/samples/Covering_Schedule_254_page_5.png'
-# formatted_results, all_extracted_text = get_ocr_vision_api_charConfi(image_path)
-# print(formatted_results)
+
+if __name__ == '__main__':
+	folder_path = '/home/ntlpt19/TF_testing_EXT/dummy_responces/mis_certs'
+	ocr_all_text_folder = os.path.join(folder_path,'all_text')
+	if not os.path.exists(ocr_all_text_folder):
+		os.makedirs(ocr_all_text_folder)
+	image_path = os.path.join(folder_path, 'Images')
+	for imgs in os.listdir(image_path):
+		formatted_results, all_extracted_text = get_ocr_vision_api_charConfi(os.path.join(image_path,imgs))
+  
+		print(all_extracted_text)
+		text_file_path = os.path.join(ocr_all_text_folder, f"{imgs}_all_text.txt")
+		# Save the extracted text to the text file
+		with open(text_file_path, 'w') as text_file:
+			text_file.write(all_extracted_text)

@@ -2,7 +2,20 @@ import cv2
 import numpy as np
 
 
+abc = '* Paella Valenciana,\n* Pulpo a la Gallega,\n* Croquetas de Jamón,\n* Tortilla Española,\n* Patatas Bravas,\n* Ensalada de Tomate con Jamón,\n* Gazpacho Andaluz,\n* Sangría,\n* Cerveza,\n* Vino Blanco'
+# Splitting the provided text by spaces to count the tokens
+text = "+ discrepancy fee of usd 100 / eur 100 / jpy 10000 / gbp 100 per set of discre\n+ third party documents except draft and commercial invoice are acceptabli\n"
+tokens = text.split()
+token_length = len(tokens)
+print(token_length)
+exit('???????????')
 
+menu_items = abc.strip().split(',')
+print(menu_items)
+for itm in menu_items:
+    print(itm)
+    
+exit('???????????')
 def tokenize(content):
     return content.split()
 content = 'nylon\n adv'

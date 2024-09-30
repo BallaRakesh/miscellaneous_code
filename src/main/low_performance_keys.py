@@ -5,7 +5,7 @@ import json
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from datetime import datetime
-
+import re
 
 load_dotenv()
 
@@ -54,7 +54,7 @@ def final_report(csv01, folder_path, doc_code, category_name):
         print(f'matched numbers: {matched}')
         matched_labels.append(matched)
         total_match_percentage.append(round((matched / len(name_df.index)) * 100, 2))
-        not_detected = name_df["predicted"].isnull().sum()
+        not_detected = name_df["filter_prediction"].isnull().sum()
         detected = len(name_df.index) - not_detected
         print(f'detected numbers: {detected}')
         label_detected.append(detected)
@@ -108,7 +108,29 @@ def final_report(csv01, folder_path, doc_code, category_name):
 
     return file_path_csv2
 
+def extract_key_value_pairs(input_text):
+    pairs = {}
+    lines = input_text.strip().split('\n')
+    current_key = None
+    current_value = ""
 
+    for line in lines:
+        line = line.strip().strip('"')
+        match = re.match(r'(.+?):\s*(.+?)$', line)
+
+        if match:
+            if current_key:
+                pairs[current_key] = current_value.strip()
+            current_key, current_value = match.groups()
+            current_key = current_key.strip('"')
+            current_value = current_value.strip('"').rstrip(',')
+        elif current_key:
+            current_value += " " + line.strip('"').rstrip(',')
+
+    if current_key:
+        pairs[current_key] = current_value.strip()
+
+    return pairs
 
 def extract_text_from_word_coords(word_coordinates: list):
     all_text = ' '.join([item['word'] for item in word_coordinates])
@@ -141,15 +163,43 @@ def open_text_file(file_path):
         content = file.read()
     return content
 
+def remove_special_chars_check(input_text):
+    characters_to_remove = ".'·!'|:()/-%;'*,"
+    cleaned_text = re.sub(f'^[{re.escape(characters_to_remove)}\s]+|[{re.escape(characters_to_remove)}\s]+$', '', str(input_text))
+    return cleaned_text
+
+
+def verify_prediction(actual_val, merged_result = None, mistral_key_value = None, mistral_flag = False, gpt_flag = False, both_results = False):
+    if mistral_flag:
+        if actual_val.lower() in str(merged_result).lower():
+            return True
+        else:
+            return False
+    elif gpt_flag:
+        if actual_val.lower() in str(mistral_key_value).lower():
+            return True
+        else:
+            return False
+    else:
+        if actual_val.lower() in str(merged_result).lower() or actual_val.lower() in str(mistral_key_value).lower():
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     
-    # final_report('/home/ntlpt19/itf_results_field_wise_report/AWB/filtered_file.csv', '/home/ntlpt19/itf_results_field_wise_report/AWB', 'CI', 'label_wise')
+    # final_report('/home/ntlpt19/itf_results_field_wise_report/CI/filtered_file_sep3.csv', '/home/ntlpt19/itf_results_field_wise_report/CI', 'CI', 'label_wise')
     # exit('OK')
+    mistral_results = '/home/ntlpt19/LLM_training/EVAL/CI/results/text_files'
+    csv_file_path = '/home/ntlpt19/itf_results_field_wise_report/CI/result_path/label_wise/CI_results/final_reprt_ci_label.csv'
+    label_wise_keys = '/home/ntlpt19/itf_results_field_wise_report/CI/result_path/label_wise/ci_analysis_pre_valid_after_fuzzy_match_post_processing_latest.csv'
+    ocr_folder = '/home/ntlpt19/itf_results_field_wise_report/CI/OCR'
+    previous_gpt_results = '/home/ntlpt19/itf_results_field_wise_report/CI/filtered_file_gpt.csv'
+    gpt_df = pd.read_csv(previous_gpt_results)
     
-    csv_file_path = '/home/ntlpt19/itf_results_field_wise_report/AWB/result_path/label_wise/CI_results/final_reprt_ci_label.csv'
-    label_wise_keys = '/home/ntlpt19/itf_results_field_wise_report/AWB/result_path/label_wise/ci_analysis_pre_valid_after_fuzzy_match_post_processing_latest.csv'
-    ocr_folder = '/home/ntlpt19/itf_results_field_wise_report/AWB/OCR'
+    only_mistral_flag = True
+    only_gpt_flag = False
+    both_results = False
     executed_json_file = ''
     if os.path.exists(executed_json_file):
         with open(executed_json_file, 'r') as json_file:
@@ -165,6 +215,13 @@ if __name__ == '__main__':
     document_type = 'CI'
     executed_file = {}
     df = pd.read_csv(label_wise_keys)
+    
+    if both_results or only_mistral_flag:
+        df['mistral_result'] = None
+    if both_results or only_gpt_flag:
+        df['gpt_result'] = None
+
+    df['filter_prediction'] = df['predicted']
     low_match_labels = get_low_match_labels(csv_file_path, threshold_val = threshold_, skip_keys = exception_keys.get(document_type, [])+ master_exception_keys)
     print(low_match_labels)
     for req_keys in low_match_labels:
@@ -186,17 +243,40 @@ if __name__ == '__main__':
                 query = f'Find the ocr information for the {img_name}and extract the {preprocessed_key} ?'
                 structured_response = all_text
                 unstructured_response = f'extract the {preprocessed_key}'
+                if os.path.exists(os.path.join(mistral_results, filename_without_extension+'.txt')):
+                    mistral_sample_result = open_text_file(os.path.join(mistral_results, filename_without_extension+'.txt'))
+                    print(mistral_sample_result)
+                    mistral_sample_result_json = extract_key_value_pairs(mistral_sample_result)
+                    mistral_key_value = mistral_sample_result_json.get(req_keys, '') + mistral_sample_result_json.get(preprocessed_key, '')
+                    print(mistral_key_value)
+                else:
+                    mistral_key_value = ''
                 # Find the ocr information for the document name pdf10_4.png and extract the your order no?
                 merged_result = merge(llm, query, structured_response, unstructured_response)
+                exit('OK')
+                merged_result = gpt_df[(gpt_df['File_Name'] == img_name) & (gpt_df['label_name'] == req_keys)]['predicted'].iloc[0]
+                
                 executed_file[img_name+'_'+req_keys] = str(merged_result)
                 
                 actual_val = df[(df['File_Name'] == img_name) & (df['label_name'] == req_keys)]['actual'].iloc[0]
+                actual_val = str(remove_special_chars_check(actual_val))
                 if not pd.isna(actual_val):
-                    df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'predicted'] = merged_result
-                    if actual_val in merged_result:
+                    if both_results or only_gpt_flag:
+                        df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'gpt_result'] = merged_result
+                    if both_results or only_mistral_flag:
+                        df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'mistral_result'] = mistral_key_value
+                        
+                    if only_mistral_flag:
+                        if mistral_key_value:
+                            df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'filter_prediction'] = mistral_key_value
+                    else:
+                        df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'filter_prediction'] = merged_result
+                    # if verify_prediction(actual_val, merged_result = merged_result, mistral_key_value = mistral_key_value, mistral_flag = only_mistral_flag, gpt_flag = only_gpt_flag, both_results = both_results):
+                    # if actual_val in str(merged_result) or actual_val in str(mistral_key_value):
+                    if actual_val.lower() in str(mistral_key_value).lower():
                         df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'Accuracy'] = 100
                         df.loc[(df['File_Name'] == img_name) & (df['label_name'] == req_keys), 'Match/No_Match'] = 1  
-    df.to_csv(os.path.join(root_folder, 'filtered_file.csv'), index=False)
+    df.to_csv(os.path.join(root_folder, 'filtered_file_sep3.csv'), index=False)
     
     with open('executed_file1.json', 'w') as json_file:
         json.dump(executed_file, json_file, indent=4)  

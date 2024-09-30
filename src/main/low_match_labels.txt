@@ -1,0 +1,17 @@
+agent_country
+agent_name
+carrier_country
+carrier_name
+container_number
+country_of_origin
+final_destination
+freight_collect_at
+goods_description
+goods_marks_and_nos
+goods_quantity
+lc_date
+lc_ref_number
+net_weight
+place_of_receipt
+pre_carriage_by
+shipped_onboard_date

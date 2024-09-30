@@ -1,7 +1,68 @@
-import cv2
 import numpy as np
 
+import re
+import json
+from low_performance_key_v2 import get_value_case_insensitive
 
+
+import re  
+
+def process_keys(input_dict):  
+    """Process the keys in the input dictionary by removing extra double quotes."""  
+    processed_dict = {}  
+    for key, value in input_dict.items():  
+        # Use regular expression to replace '" ' with ' ' and '" ' with ' '  
+        cleaned_key = re.sub('" ', ' ', key).rstrip('"')  
+        cleaned_key = re.sub(' "', ' ', cleaned_key).lstrip('"')  
+        cleaned_key = cleaned_key.strip()
+        processed_dict[cleaned_key] = value  
+    return processed_dict  
+
+
+
+
+# Load the JSON file
+with open('/home/ntlpt19/itf_results_field_wise_report/CS/results_qwen2.5_7b_v1/V1/results_filter/Covering_Schedule_478_page_0.png_document_enclosed.txt', 'r') as file:
+    content = eval(file.read())
+# Access a specific key
+print(content)
+print(process_keys({'commissioned charges': '0.00"', 'document enclosed': 'Documents attached 24,000.00 : 0.00"', 'less your charges': '0.00"', 'nostro bank bic': 'BBLBDDH107"', 'postal charges': '0.00"', 'total bill amount': '24000.00 } ```  This response is derived from the structured text provided, where specific fields were identified and extracted according to the requested keys.'}))
+exit('OK')
+print(get_value_case_insensitive(content, 'commissioned_charges', 'commissioned charges'))
+exit('OK')
+for key, value in content.items():
+    print(key , '>>>>>>>', value)
+key_value = content.get('awb date')
+
+print(key_value)
+
+exit('OK')
+
+
+
+
+
+
+
+
+
+
+def remove_special_chars_check(input_text):
+    characters_to_remove = ".'·!'|:()/-%;'*,"
+    cleaned_text = re.sub(f'^[{re.escape(characters_to_remove)}\s]+|[{re.escape(characters_to_remove)}\s]+$', '', input_text)
+    return cleaned_text
+
+# Example usage
+text = "KWANGYANG  KOREA"
+mis_res = 'India'
+if text.lower() in mis_res.lower():
+    print("Match found")
+exit('OK')
+cleaned_text = remove_special_chars_check(text)
+print(cleaned_text)  # Output: "Hello, wor!ld"
+print(len(cleaned_text))  # Output: "Hello, wor!ld"
+
+exit('OK')
 abc = '* Paella Valenciana,\n* Pulpo a la Gallega,\n* Croquetas de Jamón,\n* Tortilla Española,\n* Patatas Bravas,\n* Ensalada de Tomate con Jamón,\n* Gazpacho Andaluz,\n* Sangría,\n* Cerveza,\n* Vino Blanco'
 # Splitting the provided text by spaces to count the tokens
 text = "+ discrepancy fee of usd 100 / eur 100 / jpy 10000 / gbp 100 per set of discre\n+ third party documents except draft and commercial invoice are acceptabli\n"
